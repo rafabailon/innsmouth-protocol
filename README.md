@@ -261,8 +261,9 @@ Las pruebas usan una ruta aislada (`user://smoketest_save.json`) para no tocar l
 | `scripts/core/Game.gd` | Orquestador. Coordina menú, partida, audio, comandos, mapa y narración. |
 | `scripts/core/CommandParser.gd` | Normaliza la entrada y la convierte en `{verbo, objetivo, direccion, texto}`. No conoce la UI. |
 | `scripts/core/Room.gd` | `Resource` con datos de sala, examinables y requisitos de objetos y conexiones. |
-| `scripts/core/RoomManager.gd` | Carga el mapa, resuelve conexiones, controla objetos retirados y los serializa. |
-| `scripts/data/RoomDatabase.gd` | Contenido de las catorce salas y los seis NPC. |
+| `scripts/core/RoomManager.gd` | Carga el mapa y los paquetes, valida referencias, resuelve conexiones y serializa objetos retirados. |
+| `scripts/data/ContentPackLoader.gd` | Lee y valida los paquetes JSON enumerados en el manifiesto. |
+| `scripts/data/RoomDatabase.gd` | Contenido de las catorce salas base y los NPC. |
 | `scripts/core/NpcData.gd` | `Resource` de personaje: nombre, alias, descripción y diálogos. |
 | `scripts/core/ItemDB.gd` | Catálogo de objetos y sus textos/efectos de cordura. |
 | `scripts/core/TextUtils.gd` | Normalización, artículos, coincidencia por alias y listas naturales. |
@@ -344,7 +345,7 @@ Los nodos con nombre único (`%Historial`, `%Entrada`, `%BarraCordura`, `%Invent
 make test
 ```
 
-La suite comprueba parser, las catorce salas base y el paquete de ejemplo, cordura, inventario, requisitos, guardado/carga/borrado, las ramas de Zadok, Marsh y Devil Reef, las cinco rutas de victoria y la derrota. Salida esperada:
+La suite comprueba parser, las catorce salas base y el paquete de ejemplo, el encuentro condicionado por la marea, cordura, inventario, requisitos, guardado/carga/borrado, las ramas de Zadok, Marsh y Devil Reef, las cinco rutas de victoria y la derrota. Salida esperada:
 
 ```text
 SMOKE TEST: OK
@@ -376,8 +377,6 @@ Los ajustes incluyen tamaño del texto, alto contraste, reducción de líneas CR
 
 ---
 
-## Recursos y redistribución
+## Licencia y recursos
 
-La fuente empaquetada es **DejaVu Sans Mono**, redistribuida bajo la licencia Bitstream Vera, gratuita y permisiva. El aviso completo se incluye en [`assets/fonts/LICENSE-DejaVu.txt`](assets/fonts/LICENSE-DejaVu.txt). El WAV ambiental se genera localmente con el script estándar de Python [`tools/generate-ambience.py`](tools/generate-ambience.py); no depende de muestras ni paquetes de audio de terceros.
-
-Para reutilizar o redistribuir el proyecto fuera de este entorno, confirma la titularidad de los textos, arte y recursos del juego y elige la licencia adecuada antes de compartirlo públicamente o integrarlo en otro repositorio.
+El código y el contenido original del proyecto se distribuyen bajo la licencia MIT, incluida en [`LICENSE`](LICENSE). La fuente DejaVu Sans Mono conserva su licencia Bitstream Vera, cuyo aviso está en [`assets/fonts/LICENSE-DejaVu.txt`](assets/fonts/LICENSE-DejaVu.txt). El WAV ambiental se genera localmente con el script estándar de Python [`tools/generate-ambience.py`](tools/generate-ambience.py).

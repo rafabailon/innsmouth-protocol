@@ -20,6 +20,7 @@ El proyecto contiene una aventura de terminal con cinco rutas de escape, persist
 | Refinería de Marsh, oficina y cuentas de Devil Reef | `RoomDatabase._refineria_marsh()` / `_oficina_refineria()` + `ItemDB.OBJETOS["libro_cuentas_marsh"]` |
 | Bodega de Zadok Allen y su testimonio | `RoomDatabase._bodega_zadok()` / `_zadok_allen()` + `ItemDB.OBJETOS["cuaderno_zadok"]` |
 | Cornisa, gruta y expedición de Devil Reef | `RoomDatabase._borde_devils_reef()` / `_gruta_devils_reef()` + `ItemDB.OBJETOS["cuaderno_buzo"]` |
+| Encuentro opcional del vigía durante la bajamar | `RoomDatabase._vigia_marea()` + hora del juego en `Game.gd` |
 | Sacerdote de Dagon | `RoomDatabase._sacerdote_dagon()` |
 | Tiara de Innsmouth | `ItemDB.OBJETOS["tiara_innsmouth"]` |
 | Requisito de objeto | `Room.requisitos_objetos` + `Game._coger()` |
@@ -245,6 +246,7 @@ Se refresca al entrar en una sala, al cambiar el inventario y al terminar la par
 - Victoria con la tiara y rutas alternativas con la placa, las cuentas de Marsh y los cuadernos.
 - Derrota en una partida nueva.
 - Objetivo inicial, intermedio y final.
+- Aparición y desaparición del vigía y descripciones de las escaleras según la hora.
 - Acceso a la aduana, la bodega de Zadok, la refinería y Devil Reef; requisitos, retornos y finales alternativos.
 
 La prueba aísla el guardado en `user://smoketest_save.json`.
@@ -259,7 +261,7 @@ La pantalla de ajustes guarda el tamaño de texto, alto contraste, reducción de
 
 La escritura progresiva de la terminal es opcional, se activa desde Ajustes y se guarda como preferencia. Al desactivarla, el texto vuelve a mostrarse inmediatamente. La prueba automatizada comprueba el revelado gradual y el regreso al modo instantáneo.
 
-El reloj comienza a las 21:00 y el descanso en el hotel hace avanzar hasta seis horas. Es un coste narrativo persistente, sin impedir rutas ni forzar un final.
+El reloj comienza a las 21:00 y el descanso en el hotel hace avanzar hasta seis horas. Entre medianoche y las 04:00, cuando la marea baja, aparece en el muelle un vigía que no está allí a otras horas. Hablar con él ofrece pistas opcionales sobre las escaleras y el libro de mareas; examinar los escalones también describe el estado de la corriente. El encuentro vuelve cada noche y ninguna ruta depende de encontrarlo.
 
 El sonido es un WAV mono original de ocho segundos, generado de forma determinista con la biblioteca estándar de Python. Para regenerarlo:
 
@@ -269,7 +271,7 @@ make generate-ambience
 
 La tipografía es DejaVu Sans Mono; su aviso de redistribución está en `assets/fonts/LICENSE-DejaVu.txt`. El tema la carga directamente desde `assets/fonts/DejaVuSansMono.ttf`.
 
-Una posible ampliación futura es hacer que ciertas pistas o encuentros respondan al horario del reloj sin bloquear el avance principal.
+Las horas transcurridas se guardan en `PlayerState.banderas["minutos_transcurridos"]`. Para ampliar este sistema, consulta la hora del juego y ofrece pistas o encuentros opcionales en ventanas horarias; evita convertirlas en requisitos para completar la aventura.
 
 ---
 
@@ -307,3 +309,7 @@ Las conexiones de cada habitación se declaran como dirección → ID de destino
 `content/expansions/archivo_aduana.json` es un ejemplo funcional: añade un depósito conectado al archivo de aduanas, un objeto, un personaje con diálogo y una zona examinable. Estos elementos usan automáticamente los comandos comunes de movimiento, examen, recogida e interacción.
 
 Los paquetes cubren contenido narrativo declarativo. Una mecánica nueva —por ejemplo, una condición especial de victoria, una acción de descanso o un comando— todavía requiere lógica GDScript en `Game.gd`; evita usar IDs de contenido como condiciones especiales salvo que implementes esa conducta explícitamente. Los guardados serializan IDs, por lo que un paquete necesario para una partida debe permanecer disponible al cargarla.
+
+## 12. Licencia
+
+El código y el contenido original de Innsmouth Protocol se publican bajo la licencia MIT. La tipografía DejaVu Sans Mono mantiene su licencia Bitstream Vera y su aviso incluido en `assets/fonts/LICENSE-DejaVu.txt`.
