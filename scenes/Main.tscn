@@ -1,0 +1,329 @@
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/Game.gd" id="1_game"]
+[ext_resource type="Script" path="res://scripts/ui/TerminalUI.gd" id="2_ui"]
+[ext_resource type="Script" path="res://scripts/core/CommandParser.gd" id="3_parser"]
+[ext_resource type="Script" path="res://scripts/core/RoomManager.gd" id="4_rooms"]
+[ext_resource type="Theme" path="res://themes/terminal_theme.tres" id="5_theme"]
+[ext_resource type="Script" path="res://scripts/ui/CRTOverlay.gd" id="6_crt"]
+[ext_resource type="Script" path="res://scripts/ui/MainMenu.gd" id="7_menu"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.035, 0.054, 0.041, 0.9)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.137, 0.19, 0.145, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_input"]
+bg_color = Color(0.016, 0.027, 0.02, 0.92)
+border_width_bottom = 1
+border_color = Color(0.85, 0.65, 0.34, 0.45)
+content_margin_left = 10.0
+content_margin_top = 7.0
+content_margin_right = 10.0
+content_margin_bottom = 7.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_input_focus"]
+bg_color = Color(0.022, 0.036, 0.026, 0.98)
+border_width_bottom = 2
+border_color = Color(0.85, 0.65, 0.34, 0.9)
+content_margin_left = 10.0
+content_margin_top = 7.0
+content_margin_right = 10.0
+content_margin_bottom = 7.0
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_sep"]
+color = Color(0.137, 0.19, 0.145, 1)
+thickness = 1
+
+[node name="Main" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_game")
+
+[node name="Fondo" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.027, 0.043, 0.031, 1)
+
+[node name="CRT" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("6_crt")
+
+[node name="UI" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("5_theme")
+script = ExtResource("2_ui")
+
+[node name="MainMenu" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+z_index = 10
+theme = ExtResource("5_theme")
+script = ExtResource("7_menu")
+
+[node name="Margen" type="MarginContainer" parent="UI"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 30
+theme_override_constants/margin_top = 22
+theme_override_constants/margin_right = 30
+theme_override_constants/margin_bottom = 18
+
+[node name="Raiz" type="VBoxContainer" parent="UI/Margen"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Cabecera" type="HBoxContainer" parent="UI/Margen/Raiz"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Titulo" type="Label" parent="UI/Margen/Raiz/Cabecera"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.65, 0.34, 1)
+theme_override_font_sizes/font_size = 19
+text = "INNSMOUTH // TERMINAL 1927"
+
+[node name="Espaciador" type="Control" parent="UI/Margen/Raiz/Cabecera"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Senal" type="Label" parent="UI/Margen/Raiz/Cabecera"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.43, 0.49, 0.42, 1)
+theme_override_font_sizes/font_size = 12
+text = "SEÑAL: DÉBIL  ·  MAREA ALTA"
+
+[node name="LineaSuperior" type="HSeparator" parent="UI/Margen/Raiz"]
+layout_mode = 2
+theme_override_styles/separator = SubResource("StyleBoxLine_sep")
+
+[node name="Cuerpo" type="HBoxContainer" parent="UI/Margen/Raiz"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 22
+
+[node name="Terminal" type="VBoxContainer" parent="UI/Margen/Raiz/Cuerpo"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 8
+
+[node name="ScrollHistorial" type="ScrollContainer" parent="UI/Margen/Raiz/Cuerpo/Terminal"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="Historial" type="RichTextLabel" parent="UI/Margen/Raiz/Cuerpo/Terminal/ScrollHistorial"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0, 320)
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_colors/default_color = Color(0.78, 0.83, 0.75, 1)
+theme_override_constants/line_separation = 4
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+selection_enabled = true
+
+[node name="FilaEntrada" type="HBoxContainer" parent="UI/Margen/Raiz/Cuerpo/Terminal"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Prompt" type="Label" parent="UI/Margen/Raiz/Cuerpo/Terminal/FilaEntrada"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.65, 0.34, 1)
+theme_override_font_sizes/font_size = 19
+text = ">"
+vertical_alignment = 1
+
+[node name="Entrada" type="LineEdit" parent="UI/Margen/Raiz/Cuerpo/Terminal/FilaEntrada"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0, 38)
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.84, 0.9, 0.82, 1)
+theme_override_colors/font_placeholder_color = Color(0.43, 0.49, 0.42, 1)
+theme_override_colors/caret_color = Color(0.85, 0.65, 0.34, 1)
+theme_override_colors/selection_color = Color(0.85, 0.65, 0.34, 0.25)
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxFlat_input")
+theme_override_styles/focus = SubResource("StyleBoxFlat_input_focus")
+placeholder_text = "Escribe un comando... (ayuda)"
+caret_blink = true
+caret_blink_interval = 0.55
+
+[node name="Panel" type="PanelContainer" parent="UI/Margen/Raiz/Cuerpo"]
+custom_minimum_size = Vector2(318, 0)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="MargenPanel" type="MarginContainer" parent="UI/Margen/Raiz/Cuerpo/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 18
+
+[node name="Info" type="VBoxContainer" parent="UI/Margen/Raiz/Cuerpo/Panel/MargenPanel"]
+layout_mode = 2
+theme_override_constants/separation = 9
+
+[node name="EtiquetaPanel" type="Label" parent="UI/Margen/Raiz/Cuerpo/Panel/MargenPanel/Info"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.65, 0.34, 1)
+theme_override_font_sizes/font_size = 11
+text = "E X P E D I E N T E"
+
+[node name="Ubicacion" type="Label" parent="UI/Margen/Raiz/Cuerpo/Panel/MargenPanel/Info"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.78, 0.83, 0.75, 1)
+theme_override_font_sizes/font_size = 14
+text = "—"
+autowrap_mode = 2
+
+[node name="LineaObjetivo" type="HSeparator" parent="UI/Margen/Raiz/Cuerpo/Panel/MargenPanel/Info"]
+layout_mode = 2
+theme_override_styles/separator = SubResource("StyleBoxLine_sep")
+
+[node name="EtiquetaObjetivo" type="Label" parent="UI/Margen/Raiz/Cuerpo/Panel/MargenPanel/Info"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.43, 0.49, 0.42, 1)
+theme_override_font_sizes/font_size = 11
+text = "O B J E T I V O"
+
+[node name="Objetivo" type="Label" parent="UI/Margen/Raiz/Cuerpo/Panel/MargenPanel/Info"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.65, 0.34, 1)
+theme_override_font_sizes/font_size = 12
+text = "—"
+autowrap_mode = 2
+
+[node name="Linea1" type="HSeparator" parent="UI/Margen/Raiz/Cuerpo/Panel/MargenPanel/Info"]
+layout_mode = 2
+theme_override_styles/separator = SubResource("StyleBoxLine_sep")
+
+[node name="EtiquetaCordura" type="Label" parent="UI/Margen/Raiz/Cuerpo/Panel/MargenPanel/Info"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.43, 0.49, 0.42, 1)
+theme_override_font_sizes/font_size = 11
+text = "C O R D U R A"
+
+[node name="FilaCordura" type="HBoxContainer" parent="UI/Margen/Raiz/Cuerpo/Panel/MargenPanel/Info"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="BarraCordura" type="ProgressBar" parent="UI/Margen/Raiz/Cuerpo/Panel/MargenPanel/Info/FilaCordura"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+value = 100.0
+show_percentage = false
+
+[node name="ValorCordura" type="Label" parent="UI/Margen/Raiz/Cuerpo/Panel/MargenPanel/Info/FilaCordura"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(78, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.78, 0.83, 0.75, 1)
+theme_override_font_sizes/font_size = 12
+text = "100 / 100"
+horizontal_alignment = 2
+
+[node name="EstadoCordura" type="Label" parent="UI/Margen/Raiz/Cuerpo/Panel/MargenPanel/Info"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.68, 0.53, 1)
+theme_override_font_sizes/font_size = 11
+text = "LÚCIDO"
+horizontal_alignment = 2
+
+[node name="Linea2" type="HSeparator" parent="UI/Margen/Raiz/Cuerpo/Panel/MargenPanel/Info"]
+layout_mode = 2
+theme_override_styles/separator = SubResource("StyleBoxLine_sep")
+
+[node name="EtiquetaInventario" type="Label" parent="UI/Margen/Raiz/Cuerpo/Panel/MargenPanel/Info"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.43, 0.49, 0.42, 1)
+theme_override_font_sizes/font_size = 11
+text = "I N V E N T A R I O"
+
+[node name="Inventario" type="RichTextLabel" parent="UI/Margen/Raiz/Cuerpo/Panel/MargenPanel/Info"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 140)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/default_color = Color(0.78, 0.83, 0.75, 1)
+theme_override_constants/line_separation = 4
+bbcode_enabled = true
+fit_content = false
+autowrap_mode = 3
+
+[node name="Linea3" type="HSeparator" parent="UI/Margen/Raiz/Cuerpo/Panel/MargenPanel/Info"]
+layout_mode = 2
+theme_override_styles/separator = SubResource("StyleBoxLine_sep")
+
+[node name="Advertencia" type="Label" parent="UI/Margen/Raiz/Cuerpo/Panel/MargenPanel/Info"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.56, 0.29, 0.26, 1)
+theme_override_font_sizes/font_size = 11
+text = "No confíes en el agua.\nNo mires demasiado tiempo las casas."
+autowrap_mode = 2
+
+[node name="LineaInferior" type="HSeparator" parent="UI/Margen/Raiz"]
+layout_mode = 2
+theme_override_styles/separator = SubResource("StyleBoxLine_sep")
+
+[node name="Pie" type="Label" parent="UI/Margen/Raiz"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.43, 0.49, 0.42, 1)
+theme_override_font_sizes/font_size = 12
+text = "COMANDOS  ·  norte / sur / este / oeste  ·  mirar  ·  examinar [algo]  ·  coger [objeto]  ·  usar [objeto]  ·  hablar con [alguien]  ·  inventario  ·  objetivo  ·  guardar / cargar  ·  ayuda"
+autowrap_mode = 2
+
+[node name="CommandParser" type="Node" parent="."]
+script = ExtResource("3_parser")
+
+[node name="RoomManager" type="Node" parent="."]
+script = ExtResource("4_rooms")
