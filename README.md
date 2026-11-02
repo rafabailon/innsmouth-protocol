@@ -344,7 +344,7 @@ Los nodos con nombre único (`%Historial`, `%Entrada`, `%BarraCordura`, `%Invent
 make test
 ```
 
-La suite comprueba parser, mapa de catorce salas, cordura, inventario, requisitos, guardado/carga/borrado, las ramas de Zadok, Marsh y Devil Reef, las cinco rutas de victoria y la derrota. Salida esperada:
+La suite comprueba parser, las catorce salas base y el paquete de ejemplo, cordura, inventario, requisitos, guardado/carga/borrado, las ramas de Zadok, Marsh y Devil Reef, las cinco rutas de victoria y la derrota. Salida esperada:
 
 ```text
 SMOKE TEST: OK
@@ -361,14 +361,7 @@ make test
 
 ## Cómo ampliar el contenido
 
-Las recetas completas están en [`docs/EXPANSIONS.md`](docs/EXPANSIONS.md). Resumen:
-
-- **Sala:** crea una función en `RoomDatabase.gd` y añádela a `crear_habitaciones()`; después conecta una salida.
-- **Objeto:** añade una entrada a `ItemDB.OBJETOS` y el ID a `sala.objetos_en_sala`.
-- **Requisito:** usa `sala.requisitos_objetos`, con `objetos`, `consumir` y `mensaje`.
-- **Personaje:** crea un `NpcData` en `crear_npcs()` y añade su ID a `sala.npcs`.
-- **Comando:** añade el verbo en `CommandParser.VERBOS`, parsea en `parsear()` y ejecuta en `Game._ejecutar_comando()`.
-- **Guardado:** amplía `PlayerState.serializar()` y `deserializar()`; sube la versión si rompes compatibilidad.
+El proyecto carga paquetes JSON listados en [`content/expansions/manifest.json`](content/expansions/manifest.json). Puedes añadir salas, objetos, personajes, examinables y conexiones sin modificar la lógica del juego; [`docs/EXPANSIONS.md`](docs/EXPANSIONS.md) documenta el formato, la validación y cuándo hace falta código GDScript.
 
 ---
 
@@ -387,6 +380,4 @@ Los ajustes incluyen tamaño del texto, alto contraste, reducción de líneas CR
 
 La fuente empaquetada es **DejaVu Sans Mono**, redistribuida bajo la licencia Bitstream Vera, gratuita y permisiva. El aviso completo se incluye en [`assets/fonts/LICENSE-DejaVu.txt`](assets/fonts/LICENSE-DejaVu.txt). El WAV ambiental se genera localmente con el script estándar de Python [`tools/generate-ambience.py`](tools/generate-ambience.py); no depende de muestras ni paquetes de audio de terceros.
 
-Todavía no se ha elegido una licencia para el código y el contenido del proyecto. Antes de redistribuirlo o presentarlo como software de código abierto, confirma la titularidad y elige una licencia adecuada.
-
-El repositorio remoto está en [GitHub](https://github.com/rafabailon/innsmouth-protocol). La copia local aún no tiene commits: revisa la licencia y el contenido antes de crear el primero.
+Para reutilizar o redistribuir el proyecto fuera de este entorno, confirma la titularidad de los textos, arte y recursos del juego y elige la licencia adecuada antes de compartirlo públicamente o integrarlo en otro repositorio.

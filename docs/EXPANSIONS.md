@@ -237,7 +237,7 @@ Se refresca al entrar en una sala, al cambiar el inventario y al terminar la par
 
 `make test` ejecuta la suite de humo. Las comprobaciones cubren:
 
-- Existencia y conexiones de las catorce salas.
+- Existencia y conexiones de las catorce salas base y la sala del paquete de ejemplo.
 - Requisito de la tiara y consumo de la llave.
 - Bloqueo de la tiara sin llave.
 - Guardado, modificación, carga y restauración de sala, cordura, inventario, diálogos y objetos retirados.
@@ -270,3 +270,40 @@ make generate-ambience
 La tipografía es DejaVu Sans Mono; su aviso de redistribución está en `assets/fonts/LICENSE-DejaVu.txt`. El tema la carga directamente desde `assets/fonts/DejaVuSansMono.ttf`.
 
 Una posible ampliación futura es hacer que ciertas pistas o encuentros respondan al horario del reloj sin bloquear el avance principal.
+
+---
+
+## 11. Paquetes de contenido JSON
+
+Las salas, los objetos y los personajes nuevos pueden definirse sin editar GDScript. El juego lee las rutas enumeradas en `content/expansions/manifest.json` al iniciar y valida todos los paquetes antes de incorporarlos al mapa.
+
+### Añadir un paquete
+
+1. Crea un archivo JSON bajo `content/expansions/`.
+2. Añade su ruta `res://...` a la lista `paquetes` del manifiesto.
+3. Ejecuta `make test` para verificar el mapa y las referencias.
+
+El manifiesto y cada paquete usan `version: 1`. Un paquete puede incluir cualquiera de estas listas:
+
+```json
+{
+  "version": 1,
+  "habitaciones": [],
+  "objetos": [],
+  "npcs": [],
+  "conexiones": []
+}
+```
+
+### Formato de las entradas
+
+- **Habitación:** `id`, `nombre`, `descripcion_larga`, `descripcion_corta`; opcionalmente `ambiente`, `impacto_cordura`, `conexiones`, `objetos_en_sala`, `npcs`, `examinables`, `requisitos_conexiones` y `requisitos_objetos`. El formato de requisitos es el mismo que el de las salas GDScript descrito en las secciones 4 y 5.
+- **Objeto:** `id`, `nombre`, `descripcion`, `uso`; opcionalmente `cordura_al_examinar` y `cordura_al_coger`.
+- **NPC:** `id`, `nombre`, `descripcion`; opcionalmente `alias`, `dialogos`, `despedida` e `impacto_cordura_inicial`.
+- **Conexión:** `sala` y un diccionario `conexiones` que añade salidas a una sala existente. No puede reemplazar una salida ya definida.
+
+Las conexiones de cada habitación se declaran como dirección → ID de destino. Los IDs de objetos y NPC incluidos en salas, requisitos y salidas deben existir una vez cargados todos los paquetes. Los IDs nuevos no pueden reemplazar contenido original ni duplicar otro paquete. Si falta un archivo, el JSON no es válido, una referencia no existe o una conexión apunta a una sala desconocida, el juego informa del error y no inicia con un mapa parcial.
+
+`content/expansions/archivo_aduana.json` es un ejemplo funcional: añade un depósito conectado al archivo de aduanas, un objeto, un personaje con diálogo y una zona examinable. Estos elementos usan automáticamente los comandos comunes de movimiento, examen, recogida e interacción.
+
+Los paquetes cubren contenido narrativo declarativo. Una mecánica nueva —por ejemplo, una condición especial de victoria, una acción de descanso o un comando— todavía requiere lógica GDScript en `Game.gd`; evita usar IDs de contenido como condiciones especiales salvo que implementes esa conducta explícitamente. Los guardados serializan IDs, por lo que un paquete necesario para una partida debe permanecer disponible al cargarla.
