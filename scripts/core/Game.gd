@@ -31,7 +31,13 @@ var _audio_ambiente: AudioStreamPlayer
 
 func _ready() -> void:
 	randomize()
-	room_manager.cargar_mapa()
+	if not room_manager.cargar_mapa():
+		ui.show()
+		menu.hide()
+		ui.limpiar_historial()
+		ui.mostrar_error("No se pudo cargar el contenido: %s" % room_manager.ultimo_error)
+		ui.entrada.editable = false
+		return
 
 	ui.comando_enviado.connect(_al_recibir_comando)
 	menu.nueva_partida.connect(_iniciar_nueva_partida)
@@ -72,7 +78,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _iniciar_nueva_partida() -> void:
 	PlayerState.reset()
-	room_manager.cargar_mapa()
+	room_manager.reiniciar_estado()
 	_cordura_previa = PlayerState.salud_mental
 	_partida_iniciada = true
 	menu.hide()

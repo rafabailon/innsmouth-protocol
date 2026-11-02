@@ -345,8 +345,8 @@ static func _archivo_aduana() -> Room:
 	var sala := Room.new()
 	sala.id = "archivo_aduana"
 	sala.nombre = "Archivo de la vieja aduana"
-	sala.descripcion_larga = "La puerta del muelle cede con un gemido. La oficina de aduanas lleva décadas abandonada, pero el polvo termina en una línea recta frente al archivador del fondo. Una lámpara apagada cuelga sobre un escritorio cubierto de formularios; todos llevan el sello de Innsmouth y ninguno registra pescado.\n\nEn un cajón abierto descansa un libro de mareas sujeto por una concha negra. Al oeste, la puerta devuelve al muelle."
-	sala.descripcion_corta = "La vieja oficina de aduanas y un libro de mareas sujeto por una concha. El muelle queda al oeste."
+	sala.descripcion_larga = "La puerta del muelle cede con un gemido. La oficina de aduanas lleva décadas abandonada, pero el polvo termina en una línea recta frente al archivador del fondo. Una lámpara apagada cuelga sobre un escritorio cubierto de formularios; todos llevan el sello de Innsmouth y ninguno registra pescado.\n\nEn un cajón abierto descansa un libro de mareas sujeto por una concha negra. Una puerta interior conduce al depósito. Al oeste, la puerta devuelve al muelle."
+	sala.descripcion_corta = "La vieja oficina de aduanas y un libro de mareas sujeto por una concha. El depósito queda dentro; el muelle, al oeste."
 	sala.ambiente = "Una pluma rasca el papel en la habitación contigua. No hay habitación contigua."
 	sala.conexiones = {
 		"oeste": "muelle",

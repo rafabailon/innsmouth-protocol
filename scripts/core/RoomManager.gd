@@ -6,12 +6,107 @@ extends Node
 var habitaciones: Dictionary = {}
 var npcs: Dictionary = {}
 var _objetos_retirados: Dictionary = {}
+var ultimo_error := ""
 
 
-func cargar_mapa() -> void:
-	habitaciones = RoomDatabase.crear_habitaciones()
-	npcs = RoomDatabase.crear_npcs()
+func cargar_mapa() -> bool:
+	ultimo_error = ""
+	var cargador := ContentPackLoader.new()
+	var contenido := cargador.cargar()
+	if contenido.is_empty():
+		return _fallar(cargador.ultimo_error)
+
+	var nuevas_habitaciones := RoomDatabase.crear_habitaciones()
+	var nuevos_npcs := RoomDatabase.crear_npcs()
+	var nuevos_objetos: Dictionary = contenido.get("objetos", {})
+
+	for objeto_id in nuevos_objetos:
+		if ItemDB.OBJETOS.has(objeto_id):
+			return _fallar("El paquete intenta reemplazar un objeto existente: %s" % objeto_id)
+
+	for sala_bruta in contenido.get("habitaciones", []):
+		var sala := sala_bruta as Room
+		if sala == null or nuevas_habitaciones.has(sala.id):
+			return _fallar("ID de habitación duplicado o no válido: %s" % (sala.id if sala != null else ""))
+		nuevas_habitaciones[sala.id] = sala
+
+	for npc_bruto in contenido.get("npcs", []):
+		var npc := npc_bruto as NpcData
+		if npc == null or nuevos_npcs.has(npc.id):
+			return _fallar("ID de personaje duplicado o no válido: %s" % (npc.id if npc != null else ""))
+		nuevos_npcs[npc.id] = npc
+
+	for extension in contenido.get("conexiones", []):
+		var sala_id := str(extension.get("sala", ""))
+		var sala := nuevas_habitaciones.get(sala_id) as Room
+		if sala == null:
+			return _fallar("La conexión ampliada referencia una sala inexistente: %s" % sala_id)
+		var conexiones: Dictionary = extension.get("conexiones", {})
+		for direccion in conexiones:
+			if sala.conexiones.has(direccion):
+				return _fallar("La sala «%s» ya tiene una salida «%s»." % [sala_id, direccion])
+			sala.conexiones[direccion] = conexiones[direccion]
+
+	if not _validar_contenido(nuevas_habitaciones, nuevos_npcs, nuevos_objetos):
+		return false
+
+	habitaciones = nuevas_habitaciones
+	npcs = nuevos_npcs
+	ItemDB.establecer_extensiones(nuevos_objetos)
 	_objetos_retirados.clear()
+	return true
+
+
+func reiniciar_estado() -> void:
+	_objetos_retirados.clear()
+
+
+func _validar_contenido(
+	nuevas_habitaciones: Dictionary,
+	nuevos_npcs: Dictionary,
+	nuevos_objetos: Dictionary
+) -> bool:
+	for sala_bruta in nuevas_habitaciones.values():
+		var sala := sala_bruta as Room
+		for destino_bruto in sala.conexiones.values():
+			var destino := str(destino_bruto)
+			if not nuevas_habitaciones.has(destino):
+				return _fallar("La salida de «%s» apunta a una sala inexistente: %s" % [sala.id, destino])
+		for objeto_bruto in sala.objetos_en_sala:
+			var objeto_id := str(objeto_bruto)
+			if not ItemDB.contiene(objeto_id, nuevos_objetos):
+				return _fallar("La sala «%s» referencia un objeto inexistente: %s" % [sala.id, objeto_id])
+		for npc_bruto in sala.npcs:
+			var npc_id := str(npc_bruto)
+			if not nuevos_npcs.has(npc_id):
+				return _fallar("La sala «%s» referencia un personaje inexistente: %s" % [sala.id, npc_id])
+
+		for direccion in sala.requisitos_conexiones:
+			if not sala.conexiones.has(direccion):
+				return _fallar("El requisito de salida «%s» no tiene conexión en «%s»." % [direccion, sala.id])
+			for objeto_id in sala.objetos_requeridos_conexion(str(direccion)):
+				if not ItemDB.contiene(objeto_id, nuevos_objetos):
+					return _fallar("El requisito de «%s» referencia un objeto inexistente: %s" % [sala.id, objeto_id])
+
+		for objeto_id in sala.requisitos_objetos:
+			if not ItemDB.contiene(str(objeto_id), nuevos_objetos):
+				return _fallar("El requisito de «%s» referencia un objeto inexistente: %s" % [sala.id, objeto_id])
+			var requisito := sala.requisito_para(str(objeto_id))
+			for requerido in sala.objetos_requeridos(str(objeto_id)):
+				if not ItemDB.contiene(requerido, nuevos_objetos):
+					return _fallar("El requisito de «%s» referencia un objeto inexistente: %s" % [sala.id, requerido])
+			var consumidos: Variant = requisito.get("consumir", [])
+			if consumidos is Array:
+				for consumido in consumidos:
+					if not ItemDB.contiene(str(consumido), nuevos_objetos):
+						return _fallar("El requisito de «%s» consume un objeto inexistente: %s" % [sala.id, consumido])
+	return true
+
+
+func _fallar(mensaje: String) -> bool:
+	ultimo_error = mensaje
+	push_error("RoomManager: " + mensaje)
+	return false
 
 
 func obtener(habitacion_id: String) -> Room:

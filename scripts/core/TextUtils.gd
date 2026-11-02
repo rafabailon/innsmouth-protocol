@@ -34,7 +34,11 @@ static func normalizar(texto: String) -> String:
 		limpio = limpio.replace(original, ACENTOS[original])
 
 	# La puntuación no aporta nada al parser y rompe la coincidencia exacta.
-	for signo in [".", ",", ";", ":", "!", "?", "¿", "¡", "\"", "'", "(", ")", "“", "”", "‘", "’"]:
+	for signo in [
+		".", ",", ";", ":", "!", "?", "¿", "¡", "\"", "'", "(", ")",
+		"[", "]", "{", "}", "<", ">", "-", "_", "/", "\\", "*", "=",
+		"#", "@", "|", "“", "”", "‘", "’",
+	]:
 		limpio = limpio.replace(signo, " ")
 
 	limpio = limpio.replace("\t", " ").replace("\n", " ")
@@ -60,10 +64,20 @@ static func limpiar_articulos(texto: String) -> String:
 ## Limpia un objetivo de comando: "a la plaza" -> "plaza".
 static func preparar_objetivo(texto: String) -> String:
 	var limpio := texto.strip_edges()
-	for prefijo in PREFIJOS:
-		if limpio.begins_with(prefijo):
-			limpio = limpio.substr(prefijo.length()).strip_edges()
-			break
+	var cambio := true
+	while cambio:
+		cambio = false
+		for prefijo in PREFIJOS:
+			if limpio.begins_with(prefijo):
+				limpio = limpio.substr(prefijo.length()).strip_edges()
+				cambio = true
+				break
+		if cambio:
+			continue
+		var objetivo_limpio := limpiar_articulos(limpio)
+		if objetivo_limpio != limpio:
+			limpio = objetivo_limpio
+			cambio = true
 	return limpiar_articulos(limpio)
 
 

@@ -77,9 +77,21 @@ const OBJETOS := {
 	},
 }
 
+static var _objetos_extension: Dictionary = {}
+
 
 static func obtener(objeto_id: String) -> Dictionary:
+	if _objetos_extension.has(objeto_id):
+		return _objetos_extension[objeto_id]
 	return OBJETOS.get(objeto_id, {})
+
+
+static func contiene(objeto_id: String, extensiones: Dictionary = {}) -> bool:
+	return OBJETOS.has(objeto_id) or extensiones.has(objeto_id)
+
+
+static func establecer_extensiones(objetos: Dictionary) -> void:
+	_objetos_extension = objetos.duplicate(true)
 
 
 static func nombre(objeto_id: String) -> String:
@@ -105,6 +117,11 @@ static func cordura_al_coger(objeto_id: String) -> int:
 
 ## Resuelve "billete", "concha negra", etc. a un ID del catálogo.
 static func buscar(texto: String) -> String:
+	for objeto_id in _objetos_extension:
+		var datos: Dictionary = _objetos_extension[objeto_id]
+		if TextUtils.coincide(texto, [objeto_id, datos.get("nombre", "")]):
+			return str(objeto_id)
+
 	for objeto_id in OBJETOS:
 		var datos: Dictionary = OBJETOS[objeto_id]
 		if TextUtils.coincide(texto, [objeto_id, datos.get("nombre", "")]):
