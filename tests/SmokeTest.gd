@@ -87,6 +87,10 @@ func _ready() -> void:
 
 	comando = parser.parsear("ir a la plaza del pueblo")
 	_check(str(comando.get("objetivo", "")) == "plaza del pueblo", "parser: ir a lugar")
+	comando = parser.parsear("ir-a-la-plaza-del-pueblo")
+	_check(str(comando.get("objetivo", "")) == "plaza del pueblo", "parser: ir a lugar con guiones")
+	comando = parser.parsear("usar la llave-oxidada")
+	_check(str(comando.get("objetivo", "")) == "llave oxidada", "parser: normaliza guiones y subrayados")
 
 	comando = parser.parsear("norte")
 	_check(str(comando.get("direccion", "")) == "norte", "parser: dirección directa")
@@ -262,6 +266,36 @@ func _ready() -> void:
 	_check(PlayerState.salud_mental == 98, "juego: impacto inicial -2")
 	_check(ui.historial.get_parsed_text().length() > 0, "UI: historial con texto")
 	_check(ui.objetivo.text.contains("llave oxidada"), "UI: objetivo inicial en el panel")
+	_check(room_manager.existe("deposito_aduana"), "contenido: carga una sala del paquete")
+
+	escena._entrar_habitacion("archivo_aduana")
+	escena._al_recibir_comando("dentro")
+	_check(
+		PlayerState.habitacion_actual == "deposito_aduana",
+		"contenido: conecta una sala nueva a una sala existente"
+	)
+	escena._al_recibir_comando("hablar con el archivero")
+	_check(
+		int(PlayerState.progreso_dialogos.get("archivero_aduana", 0)) == 1,
+		"contenido: usa los diálogos de un personaje añadido"
+	)
+	escena._al_recibir_comando("coger carta censurada")
+	_check(
+		PlayerState.tiene_objeto("carta_censurada"),
+		"contenido: encuentra un objeto definido en el paquete"
+	)
+	escena._al_recibir_comando("examinar carta censurada")
+	_check(
+		ui.historial.get_parsed_text().contains("ningún pasajero será dado por perdido"),
+		"contenido: examina el objeto definido en el paquete"
+	)
+	escena._iniciar_nueva_partida()
+	_check(
+		PlayerState.habitacion_actual == "parada_autobus"
+		and not PlayerState.tiene_objeto("carta_censurada")
+		and room_manager.objeto_visible("deposito_aduana", "carta_censurada"),
+		"contenido: reinicia la partida sin retirar el paquete"
+	)
 
 	ui.entrada.text = "inventario"
 	ui.entrada.text_submitted.emit("inventario")
