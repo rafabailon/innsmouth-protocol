@@ -197,6 +197,7 @@ func _ready() -> void:
 	_check(npcs.has("sacerdote_dagon"), "mapa: sacerdote de Dagon")
 	_check(npcs.has("capataz_refineria"), "mapa: capataz de la refinería")
 	_check(npcs.has("zadok_allen"), "mapa: Zadok Allen")
+	_check(npcs.has("vigia_marea"), "mapa: vigía de la marea")
 	_check(not ItemDB.obtener("tiara_innsmouth").is_empty(), "objetos: tiara registrada")
 	_check(not ItemDB.obtener("libro_cuentas_marsh").is_empty(), "objetos: cuentas de Marsh registradas")
 	_check(not ItemDB.obtener("cuaderno_zadok").is_empty(), "objetos: cuaderno de Zadok registrado")
@@ -267,6 +268,34 @@ func _ready() -> void:
 	_check(ui.historial.get_parsed_text().length() > 0, "UI: historial con texto")
 	_check(ui.objetivo.text.contains("llave oxidada"), "UI: objetivo inicial en el panel")
 	_check(room_manager.existe("deposito_aduana"), "contenido: carga una sala del paquete")
+
+	escena._entrar_habitacion("muelle")
+	var sala_muelle := room_manager.obtener("muelle")
+	_check(
+		escena._npcs_en_sala(sala_muelle).is_empty(),
+		"marea: el vigía no aparece antes de medianoche"
+	)
+	PlayerState.poner_bandera("minutos_transcurridos", 180)
+	_check(
+		not escena._npcs_en_sala(sala_muelle).is_empty(),
+		"marea: el vigía aparece a medianoche"
+	)
+	escena._al_recibir_comando("examinar escaleras")
+	_check(
+		ui.historial.get_parsed_text().contains("La corriente retrocede"),
+		"marea: las escaleras revelan la bajamar"
+	)
+	escena._al_recibir_comando("hablar con el vigia")
+	_check(
+		ui.historial.get_parsed_text().contains("tienes cuatro horas para bajar"),
+		"marea: el vigía ofrece una pista sobre el paso"
+	)
+	PlayerState.poner_bandera("minutos_transcurridos", 420)
+	_check(
+		escena._npcs_en_sala(sala_muelle).is_empty(),
+		"marea: el vigía desaparece a las cuatro"
+	)
+	escena._iniciar_nueva_partida()
 
 	escena._entrar_habitacion("archivo_aduana")
 	escena._al_recibir_comando("dentro")
