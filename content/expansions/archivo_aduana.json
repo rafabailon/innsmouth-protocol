@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "habitaciones": [
+    {
+      "id": "deposito_aduana",
+      "nombre": "Depósito de la aduana",
+      "descripcion_larga": "La puerta del archivo da a un depósito bajo y estrecho. Cajas de madera cubren las paredes; sus etiquetas registran fechas futuras y nombres de barcos que aún no existen. Un funcionario de uniforme antiguo permanece sentado ante una mesa. Sobre ella hay una carta doblada, sellada con cera negra.",
+      "descripcion_corta": "Un depósito de cajas marcadas con fechas futuras. El archivo queda al oeste.",
+      "ambiente": "Algo golpea desde dentro de una de las cajas. El funcionario no levanta la vista.",
+      "conexiones": {
+        "oeste": "archivo_aduana"
+      },
+      "objetos_en_sala": [
+        "carta_censurada"
+      ],
+      "npcs": [
+        "archivero_aduana"
+      ],
+      "impacto_cordura": -1,
+      "examinables": {
+        "cajas": {
+          "nombre": "Las cajas de carga",
+          "descripcion": "Cada caja lleva el nombre de una familia de Innsmouth y una fecha de entrega posterior al cierre oficial de la aduana. Algunas etiquetas están escritas con tu letra.",
+          "impacto_cordura": -2,
+          "alias": [
+            "caja",
+            "etiquetas",
+            "cargamento"
+          ]
+        }
+      }
+    }
+  ],
+  "objetos": [
+    {
+      "id": "carta_censurada",
+      "nombre": "Carta censurada",
+      "descripcion": "La carta enumera nombres y fechas de regreso. La tinta negra cubre los destinos, pero el papel conserva la impresión de una frase escrita debajo: «ningún pasajero será dado por perdido».",
+      "uso": "La carta no ofrece una salida, pero confirma que la aduana llevaba registros de quienes regresaban.",
+      "cordura_al_examinar": -1,
+      "cordura_al_coger": 0
+    }
+  ],
+  "npcs": [
+    {
+      "id": "archivero_aduana",
+      "nombre": "El archivero",
+      "alias": [
+        "funcionario",
+        "archivero",
+        "aduanero"
+      ],
+      "descripcion": "El funcionario lleva un uniforme de otra época. Su rostro parece una mancha de humedad bajo la visera, aunque su pluma se mueve con precisión.",
+      "dialogos": [
+        "«Los nombres se archivan al llegar», dice sin mirarte. «Los regresos se anotan por adelantado.»",
+        "«No hay columna para los que se quedan. Nunca la ha habido.»"
+      ],
+      "despedida": "El archivero cierra el libro. Su silla está vacía."
+    }
+  ],
+  "conexiones": [
+    {
+      "sala": "archivo_aduana",
+      "conexiones": {
+        "dentro": "deposito_aduana"
+      }
+    }
+  ]
+}
