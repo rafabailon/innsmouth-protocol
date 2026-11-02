@@ -1,0 +1,20 @@
+# Godot 4
+.godot/
+.tools/
+*.translation
+export/
+build/
+.mono/
+data_*/
+mono_crash.*.json
+
+# Ejecución local
+.run/
+*.tmp
+*.log
+
+# Editor / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
