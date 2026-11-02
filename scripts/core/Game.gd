@@ -406,7 +406,7 @@ func _examinar(objetivo: String) -> void:
 	if not examinable.is_empty():
 		var clave := "examinar:%s:%s" % [sala.id, str(examinable.get("clave", ""))]
 		ui.mostrar_evento(str(examinable.get("nombre", "Algo")))
-		ui.mostrar_descripcion(str(examinable.get("descripcion", "")))
+		ui.mostrar_descripcion(_descripcion_examinable(sala, examinable))
 
 		if sala.id == "hotel_gillman" and str(examinable.get("clave", "")) == "cama":
 			_descansar_hotel()
@@ -844,10 +844,29 @@ func _avanzar_tiempo(horas: int) -> void:
 	var transcurridos := int(PlayerState.bandera("minutos_transcurridos", 0))
 	transcurridos += maxi(horas, 0) * 60
 	PlayerState.poner_bandera("minutos_transcurridos", transcurridos)
-	var minutos_del_dia := (21 * 60 + transcurridos) % (24 * 60)
+	var minutos_del_dia := _minutos_del_dia()
 	var hora := floori(float(minutos_del_dia) / 60.0)
 	var minuto := minutos_del_dia % 60
 	ui.mostrar_sistema("El reloj marca las %02d:%02d." % [hora, minuto])
+
+
+func _minutos_del_dia() -> int:
+	var transcurridos := int(PlayerState.bandera("minutos_transcurridos", 0))
+	return (21 * 60 + transcurridos) % (24 * 60)
+
+
+func _es_marea_baja() -> bool:
+	var hora := floori(float(_minutos_del_dia()) / 60.0)
+	return hora < 4
+
+
+func _descripcion_examinable(sala: Room, examinable: Dictionary) -> String:
+	var descripcion := str(examinable.get("descripcion", ""))
+	if sala.id != "muelle" or str(examinable.get("clave", "")) != "escaleras":
+		return descripcion
+	if _es_marea_baja():
+		return "%s\n\nLa corriente retrocede y deja al descubierto cuatro escalones más. Alguien ha grabado una espiral en el tercero." % descripcion
+	return "%s\n\nEl agua cubre los escalones hasta el borde. Las marcas de la piedra solo se distinguen cuando la marea se retira, entre medianoche y las cuatro." % descripcion
 
 
 func _salidas_texto(sala: Room) -> String:
@@ -868,7 +887,7 @@ func _npcs_en_sala(sala: Room) -> Array[NpcData]:
 	var personas: Array[NpcData] = []
 	for npc_id in sala.npcs:
 		var npc := room_manager.obtener_npc(str(npc_id))
-		if npc != null:
+		if npc != null and (npc.id != "vigia_marea" or _es_marea_baja()):
 			personas.append(npc)
 	return personas
 

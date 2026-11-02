@@ -34,6 +34,7 @@ static func crear_npcs() -> Dictionary:
 		_sacerdote_dagon(),
 		_capataz_refineria(),
 		_zadok_allen(),
+		_vigia_marea(),
 	]:
 		npcs[npc.id] = npc
 	return npcs
@@ -304,7 +305,7 @@ static func _muelle() -> Room:
 		},
 	}
 	sala.objetos_en_sala = []
-	sala.npcs = []
+	sala.npcs = ["vigia_marea"]
 	sala.impacto_cordura = -4
 	sala.examinables = {
 		"agua": _examinable(
@@ -711,4 +712,20 @@ static func _zadok_allen() -> NpcData:
 	]
 	npc.despedida = "Zadok esconde la botella bajo la mesa. «No escribas mi nombre en ese cuaderno. Ya lo han escrito ellos.»"
 	npc.impacto_cordura_inicial = -3
+	return npc
+
+
+static func _vigia_marea() -> NpcData:
+	var npc := NpcData.new()
+	npc.id = "vigia_marea"
+	npc.nombre = "El vigía de la marea"
+	npc.alias = ["vigia", "vigía", "vigilante", "hombre del noray"]
+	npc.descripcion = "Un hombre con impermeable oscuro aguarda junto a un noray. El agua le llega a los tobillos, aunque el muelle está varios metros sobre el mar. Solo puedes distinguir su rostro cuando una ola se retira."
+	npc.dialogos = [
+		"«No mires el reloj de la aduana», dice. «Mira el agua. Cuando deje de golpear los pilotes, tienes cuatro horas para bajar.»",
+		"«El libro no marca la marea. La recuerda. Alguien anotó cada descenso para saber cuándo abrir la puerta de abajo.»",
+		"«Si oyes tres golpes bajo el tercer escalón, no respondas. La última persona que lo hizo todavía está aprendiendo a respirar.»",
+	]
+	npc.despedida = "El vigía se aparta del noray. Bajo el impermeable no hay cuerpo, solo agua que cae hacia arriba."
+	npc.impacto_cordura_inicial = -2
 	return npc
